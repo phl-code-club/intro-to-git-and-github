@@ -9,7 +9,6 @@ jobs:
   check-structure:
     name: Check Commit and Branch Structure
     runs-on: ubuntu-latest
-    if: github.repository_owner != 'phl-code-club'
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
