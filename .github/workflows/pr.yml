@@ -38,7 +38,7 @@ jobs:
       - name: Check for required commit count
         run: |
           # Ensure at least two commits: initial and one for version update or new file
-          COMMITS=$(git rev-list --count HEAD)
+          COMMITS=$(git log --oneline | wc -l)
           if [ "$COMMITS" -lt 2 ]; then
             echo "Expected at least two commits on this branch."
             exit 1
