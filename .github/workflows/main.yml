@@ -1,0 +1,33 @@
+name: Main Branch First Push Check
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  first-push-check:
+    name: Verify Initial Commit and Branch Structure
+    runs-on: ubuntu-latest
+    if: github.run_number == 1 && github.repository_owner != 'phl-code-club'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Check commit count on main
+        run: |
+          COUNT=$(git rev-list --count HEAD)
+          echo "Commit count on main: $COUNT"
+          if [ "$COUNT" -ne 1 ]; then
+            echo "Expected exactly 1 commit on the first push to main, found $COUNT."
+            exit 1
+          fi
+
+      - name: Check that only main branch exists
+        run: |
+          BRANCHES=$(git branch | wc -l)
+          echo "Local branches: $BRANCHES"
+          if [ "$BRANCHES" -ne 1 ]; then
+            echo "Expected only one local branch (main) on first push, found $BRANCHES."
+            exit 1
+          fi

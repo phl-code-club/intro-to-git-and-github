@@ -1,0 +1,46 @@
+name: Pull Request Structure Check
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  check-structure:
+    name: Check Commit and Branch Structure
+    runs-on: ubuntu-latest
+    if: github.repository_owner != 'phl-code-club'
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Fetch all branches and history from origin
+        run: |
+          git fetch origin --prune
+
+      - name: List local branches
+        run: |
+          echo "Local branches:"
+          git branch
+
+      - name: Show commit history (on PR branch)
+        run: |
+          echo "Commit history on this branch:"
+          git log --oneline --decorate --graph --all
+
+      - name: Check for required branches
+        run: |
+          BRANCHES=$(git branch -r | grep origin | wc -l)
+          if [ "$BRANCHES" -lt 2 ]; then
+            echo "Expected at 2 remote branches to exist."
+            exit 1
+          fi
+
+      - name: Check for required commit count
+        run: |
+          # Ensure at least two commits: initial and one for version update or new file
+          COMMITS=$(git rev-list --count HEAD)
+          if [ "$COMMITS" -lt 2 ]; then
+            echo "Expected at least two commits on this branch."
+            exit 1
+          fi
